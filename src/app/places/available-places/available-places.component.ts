@@ -17,7 +17,9 @@ import {map} from "rxjs";
 export class AvailablePlacesComponent implements OnInit{
   places = signal<Place[] | undefined>(undefined);
   public isFetching = signal(false);
-  private httpClient = inject(HttpClient)
+  public error = signal('')
+
+    private httpClient = inject(HttpClient)
   private destroyRef = inject(DestroyRef)
 
   ngOnInit(): void {
@@ -34,6 +36,10 @@ export class AvailablePlacesComponent implements OnInit{
       },
         complete: () => {
         this.isFetching.update(() => false);
+        },
+        error: (err) => {
+        let message: string = 'Something went wrong while fetching available places. Please try again later.'
+        this.error.set(message);
         }
     })
     this.destroyRef.onDestroy(() => subscription$.unsubscribe())
