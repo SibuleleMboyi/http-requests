@@ -4,7 +4,7 @@ import { Place } from '../place.model';
 import { PlacesComponent } from '../places.component';
 import { PlacesContainerComponent } from '../places-container/places-container.component';
 import {HttpClient} from "@angular/common/http";
-import {map} from "rxjs";
+import {catchError, map, throwError} from "rxjs";
 
 @Component({
   selector: 'app-available-places',
@@ -28,7 +28,11 @@ export class AvailablePlacesComponent implements OnInit{
       .get<{places: Place[]}>('http://localhost:3000/places');
     const subscription$ = http
       .pipe(
-        map((responseData) => responseData.places)
+        map((responseData) => responseData.places),
+        catchError((error) => throwError(() => {
+          let message: string = 'Something went wrong while fetching available places. Please try again later.'
+          return new Error(message)
+        }))
       )
       .subscribe({
       next: (places) => {
@@ -37,9 +41,8 @@ export class AvailablePlacesComponent implements OnInit{
         complete: () => {
         this.isFetching.update(() => false);
         },
-        error: (err) => {
-        let message: string = 'Something went wrong while fetching available places. Please try again later.'
-        this.error.set(message);
+        error: (error: Error) => {
+        this.error.set(error?.message);
         }
     })
     this.destroyRef.onDestroy(() => subscription$.unsubscribe())
