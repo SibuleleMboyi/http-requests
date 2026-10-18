@@ -20,13 +20,12 @@ app.use((req, res, next) => {
 
 app.get("/places", async (req, res) => {
   await new Promise((resolve) => setTimeout(resolve, 3000));
-  return res.status(500).json();
 
-  //const fileContent = await fs.readFile("./data/places.json");
+  const fileContent = await fs.readFile("./data/places.json");
 
-  //const placesData = JSON.parse(fileContent);
+  const placesData = JSON.parse(fileContent);
 
-  //res.status(200).json({ places: placesData });
+  res.status(200).json({ places: placesData });
 });
 
 app.get("/user-places", async (req, res) => {
