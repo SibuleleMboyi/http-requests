@@ -28,10 +28,12 @@ export class UserPlacesComponent implements OnInit {
       const subscription$ = this.placesService.loadUserPlaces()
         .subscribe({
         complete: () => {
-          this.isFetching.update(() => false);
+          console.log("DonE!")
+          this.isFetching.set(false);
         },
         error: (error: Error) => {
           this.error.set(error?.message);
+          this.isFetching.set(false);
         }
       })
     this.destroyRef.onDestroy(() => subscription$.unsubscribe())
