@@ -32,8 +32,9 @@ export class AvailablePlacesComponent implements OnInit{
         complete: () => {
         this.isFetching.update(() => false);
         },
-        error: (error: Error) => {
-        this.error.set(error?.message);
+        error: (err: Error) => {
+          this.error.set(err.message)
+          console.log(err.message)
           this.isFetching.update(() => false);
         }
     })
@@ -41,10 +42,15 @@ export class AvailablePlacesComponent implements OnInit{
   }
 
   public onSelectedPlace(selectedPlace: Place) {
-    const subscription$ = this.placesService.addPlaceToUserPlaces(selectedPlace).subscribe({
-      next: (resData) => console.log(resData)
+    this.error.set('')
+    const subscription$ = this.placesService.addPlaceToUserPlaces(selectedPlace)?.subscribe({
+      next: (resData) => console.log(resData),
+      error: (err: Error) => {
+        this.error.set(err.message)
+        console.log(err.message)
+      }
     })
 
-    this.destroyRef.onDestroy(() => subscription$.unsubscribe())
+    this.destroyRef.onDestroy(() => subscription$?.unsubscribe())
   }
 }
